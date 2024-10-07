@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	logsUsageStr          = "logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]"
+	logsUsageStr          = "like [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]"
 	defaultPodLogsTimeout = 20 * time.Second
 )
 
