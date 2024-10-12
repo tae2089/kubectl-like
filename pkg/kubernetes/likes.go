@@ -73,14 +73,13 @@ func (l *LikeOptions) Complete(args []string, cmd *cobra.Command) error {
 	if err := l.LogsOptions.Complete(l.factory, cmd, args); err != nil {
 		return err
 	}
-	l.LogsOptions.ConsumeRequestFn = l.DefaultConsumeRequest
+	if l.Pattern != "" {
+		l.LogsOptions.ConsumeRequestFn = l.DefaultConsumeRequest
+	}
 	return nil
 }
 
 func (l LikeOptions) Vaildate() error {
-	if l.Pattern == "" {
-		return fmt.Errorf("pattern is required. Please provide a pattern to match the logs")
-	}
 	return l.LogsOptions.Validate()
 }
 
