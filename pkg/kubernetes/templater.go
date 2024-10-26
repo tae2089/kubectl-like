@@ -31,7 +31,6 @@ func ActsAsRootCommand(cmd *cobra.Command, filters []string, groups ...templates
 		Filtered:      filters,
 	}
 	cmd.SetFlagErrorFunc(templater.FlagErrorFunc())
-	cmd.SilenceUsage = true
 	cmd.SetUsageFunc(templater.UsageFunc())
 	cmd.SetHelpFunc(templater.HelpFunc())
 	return templater
