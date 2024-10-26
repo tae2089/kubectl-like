@@ -23,10 +23,7 @@ func CreateRootCmd() *cobra.Command {
 			viper.BindPFlags(cmd.Flags())
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			isHelp := viper.GetBool("help")
-			if isHelp {
-				return cmd.Help()
-			}
+
 			cmdutil.CheckErr(l.Complete(args, cmd))
 			cmdutil.CheckErr(l.Vaildate())
 			cmdutil.CheckErr(l.Run())
@@ -34,6 +31,6 @@ func CreateRootCmd() *cobra.Command {
 		},
 	}
 	l.AddFlags(rootCmd)
-
+	l.RegisterCompletionFunc(rootCmd)
 	return rootCmd
 }
