@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericiooptions"
 	"k8s.io/client-go/rest"
@@ -57,7 +55,6 @@ func (l *LikeOptions) AddFlags(cmd *cobra.Command) {
 	l.KubernetesConfigFlags.AddFlags(cmd.Flags())
 	filters := []string{"options"}
 	ActsAsRootCommand(cmd, filters)
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 }
 
 func (l *LikeOptions) Complete(args []string, cmd *cobra.Command) error {
