@@ -14,11 +14,12 @@ func CreateRootCmd() *cobra.Command {
 	ioStreams := genericiooptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr}
 	l := kube.NewLikeOptions(ioStreams)
 	rootCmd := &cobra.Command{
-		Use:           "kubectl like (POD | TYPE/NAME) -p PATTERN [flags] [options]",
-		Short:         "logging pods using regex pattern",
-		Long:          "logging pods using regex pattern",
-		SilenceErrors: true,
-		SilenceUsage:  true,
+		Use:                   "kubectl like [-f] [-p] (POD | TYPE/NAME) --pattern [-c CONTAINER] [options]",
+		Short:                 "logging pods using regex pattern",
+		Long:                  "logging pods using regex pattern",
+		DisableFlagsInUseLine: true,
+		SilenceErrors:         true,
+		SilenceUsage:          true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			viper.BindPFlags(cmd.Flags())
 		},
