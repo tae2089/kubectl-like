@@ -28,6 +28,31 @@ To filter Pod logs using a specific pattern, run:
 k like deployments/nginx --pattern 'error'
 ```
 
+## Shell completion
+
+This plugin supports shell completion when used through kubectl. To enable shell completion for the plugin
+you must copy the file `./kubectl_complete-like` somewhere on `$PATH` and give it executable permissions.
+
+The `./kubectl_complete-like` script shows a hybrid approach to providing completions:
+
+1. it uses the builtin `__complete` command provided by [Cobra](https://github.com/spf13/cobra) for flags
+1. it calls `kubectl` to obtain the list of namespaces to complete arguments (note that a more elegant approach would be to have the `kubectl-like` program itself provide completion of arguments by implementing Cobra's `ValidArgsFunction` to fetch the list of namespaces, but it would then be a less varied example)
+
+One can then do things like:
+
+```
+$ kubectl like <TAB>
+daemonsets/                    deployments/                    jobs/                    pods/                    replicasets/
+[...]
+
+$ kubectl like --<TAB>
+--all-containers                               -- Get all containers' logs in the pod(s).
+--all-pods                                     -- Get logs from all pod(s). Sets prefix to true.
+--as                                           -- Username to impersonate for the operation. User could be a regular user or a service account in a namespac
+--as-group                                     -- Group to impersonate for the operation, this flag can be repeated to specify multiple groups.
+[...]
+```
+
 ## Contributing
 
 Contributions are welcome! To contribute, follow these steps:
