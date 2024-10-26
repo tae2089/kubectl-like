@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tae2089/kubectl-like/pkg/kubernetes"
 	kube "github.com/tae2089/kubectl-like/pkg/kubernetes"
 	"k8s.io/cli-runtime/pkg/genericiooptions"
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
@@ -31,7 +32,11 @@ func CreateRootCmd() *cobra.Command {
 			return nil
 		},
 	}
+	// Add flags
 	l.AddFlags(rootCmd)
+	// Add completion
 	l.RegisterCompletionFunc(rootCmd)
+	//setting help templates
+	kubernetes.ActsAsRootCommand(rootCmd)
 	return rootCmd
 }

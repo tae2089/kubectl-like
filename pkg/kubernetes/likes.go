@@ -36,6 +36,7 @@ type LikeOptions struct {
 	containerNameFromRefSpecRegexp *regexp.Regexp
 }
 
+// NewLikeOptions creates a new LikeOptions struct
 func NewLikeOptions(streams genericiooptions.IOStreams) LikeOptions {
 	l := logs.NewLogsOptions(streams)
 	KubernetesConfigFlags := genericclioptions.NewConfigFlags(true)
@@ -49,35 +50,43 @@ func NewLikeOptions(streams genericiooptions.IOStreams) LikeOptions {
 	}
 }
 
+// AddFlags adds flags to the LikeOptions struct
 func (l *LikeOptions) AddFlags(cmd *cobra.Command) {
+	// Add flags from logs command
 	l.LogsOptions.AddFlags(cmd)
+	// Add flags from like command
 	cmd.Flags().StringVar(&l.Pattern, "pattern", "*", "pattern to match logs with regex")
+	// Add flags from kubectl command
 	l.KubernetesConfigFlags.AddFlags(cmd.Flags())
-	// reset help flag that is the help for kubectl
+	// reset help flag that is the help for kubectl and remove it from the command
 	cmd.PersistentFlags().BoolP("help", "", false, "")
-	ActsAsRootCommand(cmd)
-	// Hide the help for kubectl
 	cmd.PersistentFlags().MarkHidden("help")
 }
 
+// Complete fills in the gaps in the LikeOptions struct
 func (l *LikeOptions) Complete(args []string, cmd *cobra.Command) error {
 	if err := l.LogsOptions.Complete(l.factory, cmd, args); err != nil {
 		return err
 	}
+	// Set the consume request function if the pattern is not empty
+	// This is to ensure that the logs are filtered based on the pattern
 	if l.Pattern != "" {
 		l.LogsOptions.ConsumeRequestFn = l.DefaultConsumeRequest
 	}
 	return nil
 }
 
+// Validate ensures that all required arguments and flag values are provided
 func (l LikeOptions) Vaildate() error {
 	return l.LogsOptions.Validate()
 }
 
+// Run executes the LikeOptions
 func (l LikeOptions) Run() error {
 	return l.LogsOptions.RunLogs()
 }
 
+// DefaultConsumeRequest consumes the logs from the request and writes to the output
 func (l LikeOptions) DefaultConsumeRequest(request rest.ResponseWrapper, out io.Writer) error {
 	readCloser, err := request.Stream(context.TODO())
 	if err != nil {
@@ -107,6 +116,7 @@ func (l LikeOptions) DefaultConsumeRequest(request rest.ResponseWrapper, out io.
 	}
 }
 
+// RegisterCompletionFunc registers the completion functions for the LikeOptions
 func (l *LikeOptions) RegisterCompletionFunc(cmd *cobra.Command) {
 	utilcomp.SetFactoryForCompletion(l.factory)
 	cmd.ValidArgsFunction = completion.PodResourceNameAndContainerCompletionFunc(l.factory)
