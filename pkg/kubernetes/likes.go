@@ -51,10 +51,14 @@ func NewLikeOptions(streams genericiooptions.IOStreams) LikeOptions {
 
 func (l *LikeOptions) AddFlags(cmd *cobra.Command) {
 	l.LogsOptions.AddFlags(cmd)
-	cmd.Flags().StringVar(&l.Pattern, "pattern", "", "If true, print the logs for the previous instance of the container in a pod if it exists.")
+	cmd.Flags().StringVar(&l.Pattern, "pattern", "*", "pattern to match logs with regex")
 	l.KubernetesConfigFlags.AddFlags(cmd.Flags())
+	// reset help flag that is the help for kubectl
+	cmd.PersistentFlags().BoolP("help", "", false, "")
 	filters := []string{"options"}
 	ActsAsRootCommand(cmd, filters)
+	// Hide the help for kubectl
+	cmd.PersistentFlags().MarkHidden("help")
 }
 
 func (l *LikeOptions) Complete(args []string, cmd *cobra.Command) error {
