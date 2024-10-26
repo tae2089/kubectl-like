@@ -19,7 +19,7 @@ type FlagExposer interface {
 	ExposeFlags(cmd *cobra.Command, flags ...string) FlagExposer
 }
 
-func ActsAsRootCommand(cmd *cobra.Command, filters []string, groups ...templates.CommandGroup) FlagExposer {
+func ActsAsRootCommand(cmd *cobra.Command, groups ...templates.CommandGroup) FlagExposer {
 	if cmd == nil {
 		panic("nil root command")
 	}
@@ -28,7 +28,7 @@ func ActsAsRootCommand(cmd *cobra.Command, filters []string, groups ...templates
 		UsageTemplate: templates.MainUsageTemplate(),
 		HelpTemplate:  templates.MainHelpTemplate(),
 		CommandGroups: groups,
-		Filtered:      filters,
+		Filtered:      nil,
 	}
 	cmd.SetFlagErrorFunc(templater.FlagErrorFunc())
 	cmd.SetUsageFunc(templater.UsageFunc())

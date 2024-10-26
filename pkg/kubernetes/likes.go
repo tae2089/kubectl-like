@@ -55,8 +55,7 @@ func (l *LikeOptions) AddFlags(cmd *cobra.Command) {
 	l.KubernetesConfigFlags.AddFlags(cmd.Flags())
 	// reset help flag that is the help for kubectl
 	cmd.PersistentFlags().BoolP("help", "", false, "")
-	filters := []string{"options"}
-	ActsAsRootCommand(cmd, filters)
+	ActsAsRootCommand(cmd)
 	// Hide the help for kubectl
 	cmd.PersistentFlags().MarkHidden("help")
 }
