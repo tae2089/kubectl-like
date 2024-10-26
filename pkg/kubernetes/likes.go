@@ -16,7 +16,8 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/kubectl/pkg/cmd/logs"
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
-	"k8s.io/kubectl/pkg/util/templates"
+	"k8s.io/kubectl/pkg/util/completion"
+	utilcomp "k8s.io/kubectl/pkg/util/completion"
 )
 
 const (
@@ -54,19 +55,9 @@ func (l *LikeOptions) AddFlags(cmd *cobra.Command) {
 	l.LogsOptions.AddFlags(cmd)
 	cmd.Flags().StringVar(&l.Pattern, "pattern", "", "If true, print the logs for the previous instance of the container in a pod if it exists.")
 	l.KubernetesConfigFlags.AddFlags(cmd.Flags())
-
-	l.hiddenGlobalFlags(cmd)
-
 	filters := []string{"options"}
-	templates.ActsAsRootCommand(cmd, filters)
+	ActsAsRootCommand(cmd, filters)
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-}
-
-func (l *LikeOptions) hiddenGlobalFlags(cmd *cobra.Command) {
-	hiddentFlags := []string{"namespace", "server", "kubeconfig", "context", "cluster", "as", "as-group", "as-uid", "cache-dir", "certificate-authority", "client-certificate", "client-key", "disable-compression", "insecure-skip-tls-verify", "request-timeout", "tls-server-name", "token", "user"}
-	for _, flag := range hiddentFlags {
-		cmd.Flags().MarkHidden(flag)
-	}
 }
 
 func (l *LikeOptions) Complete(args []string, cmd *cobra.Command) error {
@@ -114,4 +105,29 @@ func (l LikeOptions) DefaultConsumeRequest(request rest.ResponseWrapper, out io.
 			return nil
 		}
 	}
+}
+
+func (l *LikeOptions) RegisterCompletionFunc(cmd *cobra.Command) {
+	utilcomp.SetFactoryForCompletion(l.factory)
+	cmd.ValidArgsFunction = completion.PodResourceNameAndContainerCompletionFunc(l.factory)
+	cmdutil.CheckErr(cmd.RegisterFlagCompletionFunc(
+		"namespace",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return utilcomp.CompGetResource(l.factory, "namespace", toComplete), cobra.ShellCompDirectiveNoFileComp
+		}))
+	cmdutil.CheckErr(cmd.RegisterFlagCompletionFunc(
+		"context",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return utilcomp.ListContextsInConfig(toComplete), cobra.ShellCompDirectiveNoFileComp
+		}))
+	cmdutil.CheckErr(cmd.RegisterFlagCompletionFunc(
+		"cluster",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return utilcomp.ListClustersInConfig(toComplete), cobra.ShellCompDirectiveNoFileComp
+		}))
+	cmdutil.CheckErr(cmd.RegisterFlagCompletionFunc(
+		"user",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return utilcomp.ListUsersInConfig(toComplete), cobra.ShellCompDirectiveNoFileComp
+		}))
 }
